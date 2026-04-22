@@ -68,7 +68,7 @@ src/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/pharmacist-sabot/DSAP.git
+git clone https://github.com/suradet-ps/DSAP.git
 
 # 2. Install dependencies
 pnpm install

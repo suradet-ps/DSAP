@@ -29,10 +29,6 @@ jobs:
           node-version: 24
           cache: pnpm
 
-      - name: Repair pnpm-lock.yaml if needed
-        run: |
-          node -e "const fs=require('fs');const p='pnpm-lock.yaml'; if(!fs.existsSync(p)){console.log('no lockfile'); process.exit(0);} const s=fs.readFileSync(p,'utf8'); const idx=s.indexOf('\n---\n'); if(idx!==-1){fs.writeFileSync(p,s.slice(0,idx)); console.log('pnpm-lock.yaml contained multiple documents — trimmed to first doc');} else {console.log('pnpm-lock.yaml OK');}"
-
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 

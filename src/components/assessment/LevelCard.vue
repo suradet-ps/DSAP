@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 import type { EvaluationCriterion } from '@/types/models';
 
 import BaseCheckbox from '@/components/common/BaseCheckbox.vue';
 
-defineProps<{
+const props = defineProps<{
   level: number;
   description?: string;
   criteria: EvaluationCriterion[];
@@ -14,59 +16,113 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'toggle', id: string): void;
 }>();
+
+const completedCriteriaCount = computed(() =>
+  props.criteria.filter(item => props.checkedCriteria.includes(item.id)).length,
+);
+
+const progressWidth = computed(() => {
+  if (props.criteria.length === 0)
+    return 100;
+
+  return Math.round((completedCriteriaCount.value / props.criteria.length) * 100);
+});
+
+const status = computed(() => {
+  if (props.criteria.length === 0) {
+    return {
+      label: 'พื้นฐาน',
+      classes: 'bg-[var(--color-cloud)] text-[var(--color-subtle)]',
+      bar: 'bg-[#ced4da]',
+    };
+  }
+
+  if (props.isPassed) {
+    return {
+      label: 'ผ่านแล้ว',
+      classes: 'bg-[var(--color-success-soft)] text-[var(--color-success)]',
+      bar: 'bg-[var(--color-success)]',
+    };
+  }
+
+  if (completedCriteriaCount.value > 0) {
+    return {
+      label: 'กำลังดำเนินการ',
+      classes: 'bg-[var(--color-warning-soft)] text-[#9a6700]',
+      bar: 'bg-[#f59f00]',
+    };
+  }
+
+  return {
+    label: 'ยังไม่เริ่ม',
+    classes: 'bg-[var(--color-cloud)] text-[var(--color-subtle)]',
+    bar: 'bg-[#ced4da]',
+  };
+});
 </script>
 
 <template>
-  <div
-    class="border rounded-xl overflow-hidden transition-all duration-300 mb-6"
-    :class="[
-      isPassed
-        ? 'border-green-200 shadow-md ring-1 ring-green-100'
-        : 'border-gray-200 shadow-sm',
-    ]"
-  >
-    <!-- Header -->
-    <div
-      class="px-4 py-3 border-b flex items-center justify-between"
-      :class="isPassed ? 'bg-green-50' : 'bg-gray-50'"
-    >
-      <div class="flex items-center gap-3">
-        <span
-          class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold"
-          :class="isPassed ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'"
-        >
-          {{ level }}
+  <section class="panel-card overflow-hidden">
+    <header class="border-b border-[var(--color-border)] bg-white px-5 py-5 sm:px-6">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <span
+              class="inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
+              :class="isPassed ? 'bg-[var(--color-success)] text-white' : 'bg-[var(--color-cloud)] text-[var(--color-steel)]'"
+            >
+              {{ level }}
+            </span>
+            <div>
+              <h3 class="text-lg font-semibold text-[var(--color-ink)]">
+                ระดับที่ {{ level }}
+              </h3>
+              <p class="text-sm text-[var(--color-subtle)]">
+                <span class="metric-value">{{ completedCriteriaCount }}</span>
+                / {{ criteria.length }} เกณฑ์
+              </p>
+            </div>
+          </div>
+
+          <p v-if="description" class="max-w-3xl text-sm leading-6 text-[var(--color-steel)]">
+            {{ description }}
+          </p>
+        </div>
+
+        <span class="status-chip self-start" :class="status.classes">
+          {{ status.label }}
         </span>
-        <h3 class="font-semibold text-gray-800">
-          ระดับที่ {{ level }}
-        </h3>
       </div>
-      <span v-if="isPassed" class="text-xs font-bold text-green-600 bg-white px-2 py-1 rounded-full border border-green-200">
-        ผ่านเกณฑ์ ✅
-      </span>
-    </div>
 
-    <!-- Content -->
-    <div class="p-4 bg-white">
-      <p v-if="description" class="text-sm text-gray-500 mb-4 italic">
-        "{{ description }}"
-      </p>
+      <div class="mt-4 flex items-center gap-4">
+        <div class="h-2 flex-1 overflow-hidden rounded-full bg-[var(--color-cloud)]">
+          <div class="h-full rounded-full transition-all duration-200" :class="status.bar" :style="{ width: `${progressWidth}%` }" />
+        </div>
+        <div class="metric-value min-w-14 text-right text-sm font-medium text-[var(--color-steel)]">
+          {{ progressWidth }}%
+        </div>
+      </div>
+    </header>
 
-      <div class="space-y-3">
+    <div class="bg-white p-5 sm:p-6">
+      <div v-if="criteria.length" class="space-y-3">
         <BaseCheckbox
           v-for="item in criteria"
           :id="item.id"
           :key="item.id"
           :label="item.text"
+          :description="item.note"
           :model-value="checkedCriteria.includes(item.id)"
           @update:model-value="emit('toggle', item.id)"
         />
+      </div>
 
-        <!-- กรณี Level 0 ไม่มี Criteria -->
-        <div v-if="criteria.length === 0" class="text-center py-4 text-gray-400 text-sm bg-gray-50 rounded-lg border border-dashed border-gray-200">
-          ระดับเริ่มต้น (ไม่ต้องดำเนินการใดๆ)
-        </div>
+      <div
+        v-else
+        class="rounded-[8px] border border-dashed border-[var(--color-border)] bg-[var(--color-cloud)] px-4 py-5 text-sm text-[var(--color-subtle)]"
+      >
+        ระดับเริ่มต้น ใช้เป็น baseline ก่อนเข้าสู่เกณฑ์การพัฒนาในระดับถัดไป
       </div>
     </div>
-  </div>
+  </section>
 </template>

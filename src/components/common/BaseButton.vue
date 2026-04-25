@@ -1,23 +1,37 @@
 <script setup lang="ts">
 type Props = {
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  size?: 'sm' | 'md' | 'lg';
+  type?: 'button' | 'submit' | 'reset';
+  block?: boolean;
 };
 
 withDefaults(defineProps<Props>(), {
   variant: 'primary',
+  size: 'md',
+  type: 'button',
+  block: false,
 });
 
 const variantClasses = {
-  primary: 'bg-brand hover:bg-brand-hover text-white shadow-sm hover:shadow',
-  secondary: 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50',
-  danger: 'bg-red-500 hover:bg-red-600 text-white',
+  primary: 'border border-transparent bg-brand text-white shadow-sm hover:-translate-y-px hover:bg-brand-hover hover:shadow-[var(--shadow-soft)] active:translate-y-0 active:bg-[var(--color-brand-active)]',
+  secondary: 'border border-brand bg-white text-brand hover:bg-[var(--color-info-soft)] hover:text-[#084298] active:bg-[#d8e7ff]',
+  ghost: 'border border-transparent bg-transparent text-[var(--color-steel)] hover:bg-[var(--color-cloud)] hover:text-[var(--color-ink)]',
+  danger: 'border border-transparent bg-[var(--color-error)] text-white hover:-translate-y-px hover:bg-[#bb2d3b] active:translate-y-0',
+};
+
+const sizeClasses = {
+  sm: 'h-10 px-4 text-sm',
+  md: 'h-11 px-5 text-sm',
+  lg: 'h-12 px-6 text-base',
 };
 </script>
 
 <template>
   <button
-    class="inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand disabled:opacity-50 disabled:cursor-not-allowed"
-    :class="variantClasses[variant]"
+    :type="type"
+    class="inline-flex items-center justify-center gap-2 rounded-[6px] font-medium whitespace-nowrap transition-all duration-150 focus-visible:border-brand focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[#86b7fe] focus-visible:ring-4 focus-visible:ring-[rgba(13,110,253,0.18)] disabled:cursor-not-allowed disabled:opacity-60"
+    :class="[variantClasses[variant], sizeClasses[size], block ? 'w-full' : 'w-auto']"
   >
     <slot />
   </button>

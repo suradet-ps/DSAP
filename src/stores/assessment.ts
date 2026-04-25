@@ -5,30 +5,16 @@ import { computed, ref } from 'vue';
 import type { AssessmentState, HospitalInfo, Standard } from '@/types/models';
 
 import rawStandards from '@/data/standards.json';
+import { createInitialAssessmentState } from '@/utils/assessment';
 
 export const useAssessmentStore = defineStore('assessment', () => {
   // --- 1. Master Data (Reference) ---
   // โหลดข้อมูลเกณฑ์จาก JSON
-  const standards = ref<Standard[]>(rawStandards as unknown as Standard[]);
+  const standards = ref<Standard[]>(rawStandards as Standard[]);
 
   // --- 2. State (User Data) ---
   // ใช้ useStorage เพื่อ Auto-save ลง LocalStorage
-  const assessmentState = useStorage<AssessmentState>('dsap-assessment-v1', {
-    id: crypto.randomUUID(),
-    lastUpdated: new Date().toISOString(),
-    isComplete: false,
-    hospitalInfo: {
-      name: '',
-      region: '',
-      province: '',
-      district: '',
-      bedCount: 0,
-      hospitalSize: '',
-      staff: { pharmacists: 0, assistants: 0, others: 0 },
-      stats: { opdVisits: 0, opdPrescriptions: 0, ipdAdmissions: 0, ipdPatientDays: 0 },
-    },
-    progress: {},
-  });
+  const assessmentState = useStorage<AssessmentState>('dsap-assessment-v1', createInitialAssessmentState());
 
   // --- 3. Getters (Computed) ---
 
@@ -124,12 +110,8 @@ export const useAssessmentStore = defineStore('assessment', () => {
 
   // [Fix] ประกาศ Function นี้ให้ถูกต้อง ก่อนส่งออก
   function resetAssessment() {
-    // ล้างข้อมูลใน State
-    assessmentState.value = null as any;
-    // ล้างข้อมูลใน LocalStorage
-    localStorage.removeItem('dsap-assessment-v1');
-    // รีโหลดหน้าจอเพื่อเริ่มใหม่
-    location.reload();
+    assessmentState.value = createInitialAssessmentState();
+    initialize();
   }
 
   // เรียกใช้ครั้งแรกเพื่อเตรียมข้อมูล

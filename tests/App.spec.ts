@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import App from '@/App.vue';
+import AssessmentLayout from '@/layouts/AssessmentLayout.vue';
 import BlankLayout from '@/layouts/BlankLayout.vue';
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
 
@@ -28,6 +29,7 @@ describe('app.vue Layout Switching', () => {
         stubs: {
           DefaultLayout: true, // Stub to verify existence
           BlankLayout: true,
+          AssessmentLayout: true,
         },
       },
     });
@@ -53,11 +55,39 @@ describe('app.vue Layout Switching', () => {
         stubs: {
           DefaultLayout: true,
           BlankLayout: true,
+          AssessmentLayout: true,
         },
       },
     });
 
     expect(wrapper.findComponent(BlankLayout).exists()).toBe(true);
     expect(wrapper.findComponent(DefaultLayout).exists()).toBe(false);
+  });
+
+  it('renders AssessmentLayout when meta layout is assessment', async () => {
+    const router = createRouter({
+      history: createWebHistory(),
+      routes: [
+        { path: '/assess', component: DummyComponent, meta: { layout: 'assessment' } },
+      ],
+    });
+
+    router.push('/assess');
+    await router.isReady();
+
+    const wrapper = mount(App, {
+      global: {
+        plugins: [router],
+        stubs: {
+          DefaultLayout: true,
+          BlankLayout: true,
+          AssessmentLayout: true,
+        },
+      },
+    });
+
+    expect(wrapper.findComponent(AssessmentLayout).exists()).toBe(true);
+    expect(wrapper.findComponent(DefaultLayout).exists()).toBe(false);
+    expect(wrapper.findComponent(BlankLayout).exists()).toBe(false);
   });
 });

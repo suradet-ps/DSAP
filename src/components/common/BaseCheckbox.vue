@@ -5,6 +5,7 @@ const props = defineProps<{
   modelValue: boolean;
   label: string;
   id: string;
+  description?: string;
   disabled?: boolean;
 }>();
 
@@ -14,40 +15,41 @@ const emit = defineEmits<{
 
 const inputId = computed(() => `checkbox-${props.id}`);
 
-function toggle() {
-  if (!props.disabled) {
-    emit('update:modelValue', !props.modelValue);
+function handleChange(event: Event) {
+  const target = event.target;
+
+  if (target instanceof HTMLInputElement) {
+    emit('update:modelValue', target.checked);
   }
 }
 </script>
 
 <template>
-  <div
-    class="flex items-start gap-3 p-3 rounded-lg border transition-all cursor-pointer select-none group"
+  <label
+    :for="inputId"
+    class="group flex items-start gap-3 rounded-[8px] border p-4 transition-all duration-150"
     :class="[
       modelValue
-        ? 'bg-blue-50 border-blue-200 shadow-sm'
-        : 'bg-white border-gray-200 hover:border-gray-300',
-      disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : '',
+        ? 'border-brand bg-[var(--color-info-soft)] shadow-[var(--shadow-soft)]'
+        : 'border-[var(--color-border)] bg-white hover:border-[#c5d4ea] hover:bg-[var(--color-cloud)]',
+      disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
     ]"
-    @click="toggle"
   >
-    <!-- Custom Checkbox Box -->
-    <div class="relative flex items-center">
+    <span class="relative mt-0.5 flex items-center">
       <input
         :id="inputId"
         type="checkbox"
         class="peer sr-only"
         :checked="modelValue"
         :disabled="disabled"
+        @change="handleChange"
       >
-      <div
-        class="h-5 w-5 border-2 border-gray-300 rounded bg-white transition-colors peer-checked:bg-blue-600 peer-checked:border-blue-600"
+      <span
+        class="flex h-[18px] w-[18px] items-center justify-center rounded-[4px] border bg-white transition-all duration-150 peer-focus-visible:border-brand peer-focus-visible:outline-2 peer-focus-visible:outline-offset-0 peer-focus-visible:outline-[#86b7fe] peer-focus-visible:ring-4 peer-focus-visible:ring-[rgba(13,110,253,0.18)]"
+        :class="modelValue ? 'border-brand bg-brand text-white' : 'border-[#ced4da] text-transparent'"
       >
-        <!-- Checkmark Icon -->
         <svg
-          v-if="modelValue"
-          class="h-4 w-4 text-white mx-auto mt-0.5"
+          class="h-3.5 w-3.5"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -57,16 +59,16 @@ function toggle() {
         >
           <polyline points="20 6 9 17 4 12" />
         </svg>
-      </div>
-    </div>
+      </span>
+    </span>
 
-    <!-- Label Text -->
-    <label
-      :for="inputId"
-      class="text-sm text-gray-700 cursor-pointer flex-1 leading-relaxed"
-      :class="{ 'font-medium text-gray-900': modelValue }"
-    >
-      {{ label }}
-    </label>
-  </div>
+    <span class="min-w-0 flex-1">
+      <span class="block text-sm leading-6" :class="modelValue ? 'font-medium text-[var(--color-ink)]' : 'text-[var(--color-steel)]'">
+        {{ label }}
+      </span>
+      <span v-if="description" class="mt-1 block text-xs leading-5 text-[var(--color-subtle)]">
+        {{ description }}
+      </span>
+    </span>
+  </label>
 </template>

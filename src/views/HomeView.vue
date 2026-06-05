@@ -6,7 +6,7 @@ import {
   Building2,
   DatabaseZap,
   ShieldCheck,
-} from 'lucide-vue-next';
+} from '@lucide/vue';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { RouterLink } from 'vue-router';

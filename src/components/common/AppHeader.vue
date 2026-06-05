@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Activity, Menu, ShieldCheck, X } from 'lucide-vue-next';
+import { Activity, Menu, ShieldCheck, X } from '@lucide/vue';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';

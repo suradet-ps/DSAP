@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ClipboardList, FileText, LayoutDashboard } from 'lucide-vue-next';
+import { ClipboardList, FileText, LayoutDashboard } from '@lucide/vue';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';

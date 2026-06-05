@@ -5,7 +5,7 @@ import {
   ChartNoAxesColumn,
   ClipboardCheck,
   RotateCcw,
-} from 'lucide-vue-next';
+} from '@lucide/vue';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, Building2, ClipboardList, Hospital, Users } from 'lucide-vue-next';
+import { ArrowRight, Building2, ClipboardList, Hospital, Users } from '@lucide/vue';
 import { storeToRefs } from 'pinia';
 import { computed, reactive, watch } from 'vue';
 import { RouterLink } from 'vue-router';
